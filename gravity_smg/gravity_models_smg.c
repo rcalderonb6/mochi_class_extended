@@ -75,6 +75,16 @@ int gravity_models_gravity_properties_smg(
      pba->parameters_2_size_smg = 5;
      class_read_list_of_doubles("parameters_smg",pba->parameters_2_smg,pba->parameters_2_size_smg);
    }
+  
+  // RCB: Addind no-slip gravity
+  if (strcmp(string1,"no_slip") == 0) {
+     pba->gravity_model_smg = no_slip;
+     pba->field_evolution_smg = _FALSE_;
+     pba->M_pl_evolution_smg = _TRUE_;
+     flag2=_TRUE_;
+     pba->parameters_2_size_smg = 6;
+     class_read_list_of_doubles("parameters_smg",pba->parameters_2_smg,pba->parameters_2_size_smg);
+   }
 
   if (strcmp(string1,"constant_alphas") == 0) {
      pba->gravity_model_smg = constant_alphas;
@@ -825,7 +835,7 @@ int gravity_models_gravity_properties_smg(
 
   class_test(flag2==_FALSE_,
              errmsg,
-             "could not identify gravity_theory value, check that it is one of 'propto_omega', 'propto_scale', 'constant_alphas', 'eft_alphas_power_law', 'eft_gammas_power_law', 'eft_gammas_exponential', 'external_alphas', 'stable_params', 'brans_dicke', 'galileon', 'nKGB', 'quintessence_monomial', 'quintessence_tracker', 'alpha_attractor_canonical' ...");
+             "could not identify gravity_theory value, check that it is one of 'propto_omega', 'propto_scale','no_slip', 'constant_alphas', 'eft_alphas_power_law', 'eft_gammas_power_law', 'eft_gammas_exponential', 'external_alphas', 'stable_params', 'brans_dicke', 'galileon', 'nKGB', 'quintessence_monomial', 'quintessence_tracker', 'alpha_attractor_canonical' ...");
 
   return _SUCCESS_;
 }
@@ -1458,6 +1468,22 @@ int gravity_models_get_alphas_par_smg(
     pvecback[pba->index_bg_M2_smg] = 1.+delta_M_pl;
   }
 
+  else if (pba->gravity_model_smg == no_slip) {
+
+    double A = pba->parameters_2_smg[0];
+    double a_t = pba->parameters_2_smg[1];
+    double tau= pba->parameters_2_smg[2];
+    double c_k = pba->parameters_2_smg[3];
+    double c_t = pba->parameters_2_smg[4];
+
+    pvecback[pba->index_bg_kineticity_smg] = c_k;
+    pvecback[pba->index_bg_braiding_smg] = -2* A * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
+    pvecback[pba->index_bg_tensor_excess_smg] = c_t;
+    pvecback[pba->index_bg_mpl_running_smg] = A * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
+    pvecback[pba->index_bg_delta_M2_smg] = delta_M_pl; //M2-1
+    pvecback[pba->index_bg_M2_smg] = 1.+delta_M_pl;
+  }
+
   else if (pba->gravity_model_smg == constant_alphas) {
 
     double c_k = pba->parameters_2_smg[0];
@@ -1814,6 +1840,10 @@ int gravity_models_initial_conditions_smg(
 			pvecback_integration[pba->index_bi_delta_M_pl_smg] = pba->parameters_2_smg[4]-1.;
 			break;
 
+	  case no_slip:
+			pvecback_integration[pba->index_bi_delta_M_pl_smg] = pba->parameters_2_smg[5]-1.;
+			break;
+
 	  case constant_alphas:
 			pvecback_integration[pba->index_bi_delta_M_pl_smg] = pba->parameters_2_smg[4]-1.;
 			break;
@@ -1937,6 +1967,13 @@ int gravity_models_print_stdout_smg(
       printf(" -> c_K = %g, c_B = %g, c_M = %g, c_T = %g, M_*^2_init = %g \n",
 	     pba->parameters_2_smg[0],pba->parameters_2_smg[1],pba->parameters_2_smg[2],pba->parameters_2_smg[3],
 	     pba->parameters_2_smg[4]);
+    break;
+
+    case no_slip:
+      printf("Modified gravity: no-slip (alpha_B = -2 alpha_M) with parameters: \n");
+      printf(" -> A = %g, a_t = %g, tau = %g, c_K = %g, c_T = %g, M_*^2_init = %g \n",
+	     pba->parameters_2_smg[0],pba->parameters_2_smg[1],pba->parameters_2_smg[2],pba->parameters_2_smg[3],
+	     pba->parameters_2_smg[4],pba->parameters_2_smg[5]);
     break;
 
     case constant_alphas:
