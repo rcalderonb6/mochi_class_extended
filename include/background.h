@@ -21,7 +21,7 @@ enum equation_of_state {CLP,EDE};
 
 /** list of possible theories and models (_smg) */
 
-enum gravity_model {propto_omega, propto_scale,
+enum gravity_model {propto_omega, propto_scale,no_slip,
     constant_alphas,
     eft_alphas_power_law, eft_gammas_power_law, eft_gammas_exponential,
     external_alphas, // MC parametrization with external alpha_X's
