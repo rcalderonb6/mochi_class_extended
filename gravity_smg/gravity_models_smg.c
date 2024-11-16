@@ -1470,16 +1470,16 @@ int gravity_models_get_alphas_par_smg(
 
   else if (pba->gravity_model_smg == no_slip) {
 
-    double A = pba->parameters_2_smg[0];
+    double c_m = pba->parameters_2_smg[0];
     double a_t = pba->parameters_2_smg[1];
     double tau= pba->parameters_2_smg[2];
     double c_k = pba->parameters_2_smg[3];
     double c_t = pba->parameters_2_smg[4];
 
     pvecback[pba->index_bg_kineticity_smg] = c_k;
-    pvecback[pba->index_bg_braiding_smg] = -2* A * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
+    pvecback[pba->index_bg_braiding_smg] = -2* c_m * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
     pvecback[pba->index_bg_tensor_excess_smg] = c_t;
-    pvecback[pba->index_bg_mpl_running_smg] = A * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
+    pvecback[pba->index_bg_mpl_running_smg] = c_m * (1 - pow(tanh(0.5*tau*log(a/a_t)),2));
     pvecback[pba->index_bg_delta_M2_smg] = delta_M_pl; //M2-1
     pvecback[pba->index_bg_M2_smg] = 1.+delta_M_pl;
   }
