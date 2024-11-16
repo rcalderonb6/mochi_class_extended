@@ -478,7 +478,7 @@ double get_integral(qss_node *node, int level){
   double IL,IR;
   /* An updated leaf_count is assumed. */
   if (node->leaf_childs<=level){
-    return node->I;
+    return node->integral_estimate;
   }
   else{
     IL = get_integral(node->left, level);
@@ -518,7 +518,7 @@ int gk_adapt(
   (*node)->left = NULL; (*node)->right = NULL;
 
   gk_quad((*test), (*function), params_for_function, *node, a, b, isindefinite);
-  if ((fabs((*node)->err/(*node)->I) < tol)||(tol>=1.0)){
+  if ((fabs((*node)->err/(*node)->integral_estimate) < tol)||(tol>=1.0)){
     /* Stop recursion and return. tol>=1.0 in case of I=0 infinite recursion */
     return _SUCCESS_;
   }
@@ -726,7 +726,7 @@ int gk_quad(int (*test)(void * params_for_function, double q, double *psi),
     }
   }
   node->err = pow(200*fabs(Ik-Ig),1.5);
-  node->I = Ik;
+  node->integral_estimate = Ik;
   return _SUCCESS_;
 }
 

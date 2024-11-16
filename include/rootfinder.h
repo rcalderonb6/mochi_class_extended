@@ -24,7 +24,7 @@
 			  double b,
 			  double c,
 			  double *x,
-			  int *complex
+			  int *complex_n
 			 );
       
       //Exact trigonometric solution
@@ -33,7 +33,7 @@
 			  double b,
 			  double c,
 			  double *x,
-			  int *complex
+			  int *complex_n
  			);
       
       //Split soluton (numerical)
@@ -42,7 +42,7 @@
 				double b,
 				double c,
 				double *x,
-				int *complex
+				int *complex_n
 				);
       
       
